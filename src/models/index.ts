@@ -7,3 +7,6 @@ export { AssetMetadataDto } from './asset-metadata-dto';
 export { SeriesDto } from './series-dto';
 export { CreatorStoryDto } from './creator-story-dto';
 export { RegisterAssetDto } from './register-asset-dto';
+export { AssetTagDto } from './asset-tag-dto';
+export { AssetMetadataUrlDto } from './asset-metadata-url-dto';
+export { AssetDescriptionDto } from './asset-description-dto';

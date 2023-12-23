@@ -1,6 +1,6 @@
-import { Controller, Get, Body, Post, Query } from '@nestjs/common';
+import { Controller, Get, Body, Post, Query, Delete } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { AssetBySeriesResponse, AssetMetadataDto, RegisterAssetDto } from 'src/models';
+import { AssetBySeriesResponse, AssetDescriptionDto, AssetMetadataDto, AssetMetadataUrlDto, AssetTagDto, RegisterAssetDto } from 'src/models';
 
 @ApiTags('assetProvenanceEvmService')
 @Controller('asset-provenance-evm')
@@ -45,28 +45,27 @@ export class AssetProvenanceEvmController {
 
     }
 
-    @Post()
-    setAssetUri (assetId: string, uri: string, hash: string) {
+    @ApiBody({ type: [AssetMetadataUrlDto] })
+    @Post('setAssetUri')
+    setAssetUri (@Body() request: AssetMetadataUrlDto) {
 
     }
 
-    @Post()
-    updateDocumentHash (assetId: string, hash: string) {
+    @ApiBody({ type: [AssetDescriptionDto] })
+    @Post('setDescription')
+    updateAssetDescription(@Body() request: AssetDescriptionDto) {
 
     }
 
-    @Post()
-    updateAssetDescription(assetId: string, description: string) {
+    @ApiBody({ type: [AssetTagDto] })
+    @Post('addTag')
+    addTagToAsset(@Body() request: AssetTagDto) {
 
     }
 
-    @Post()
-    addTagToAsset(assetId: string, tag: string) {
-
-    }
-
-    @Post()
-    removeTagFromAsset(assetId: string, tag: string) {
+    @ApiBody({ type: [AssetTagDto] })
+    @Delete('removeTag')
+    removeTagFromAsset(@Body() request: AssetTagDto) {
 
     }
 }

@@ -11,7 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReqisteredCreatorResponse = void 0;
 const swagger_1 = require("@nestjs/swagger");
-class ReqisteredCreatorResponse {
+const paged_data_response_1 = require("./paged-data-response");
+class ReqisteredCreatorResponse extends paged_data_response_1.PagedDataResponse {
 }
 exports.ReqisteredCreatorResponse = ReqisteredCreatorResponse;
 __decorate([
@@ -21,28 +22,4 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], ReqisteredCreatorResponse.prototype, "creatorAddresses", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'The start index of this page.'
-    }),
-    __metadata("design:type", Number)
-], ReqisteredCreatorResponse.prototype, "pageIndex", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'The start index of the next page.'
-    }),
-    __metadata("design:type", Number)
-], ReqisteredCreatorResponse.prototype, "nextPageIndex", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'The number of rows returned.'
-    }),
-    __metadata("design:type", Number)
-], ReqisteredCreatorResponse.prototype, "count", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'The total number of rows available.'
-    }),
-    __metadata("design:type", Number)
-], ReqisteredCreatorResponse.prototype, "totalCount", void 0);
 //# sourceMappingURL=registered-creators-response.js.map

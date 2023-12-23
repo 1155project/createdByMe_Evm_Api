@@ -1,8 +1,4 @@
-import { PagedResponse } from "src/interfaces";
-export declare class ReqisteredCreatorResponse implements PagedResponse {
+import { PagedDataResponse } from './paged-data-response';
+export declare class ReqisteredCreatorResponse extends PagedDataResponse {
     creatorAddresses: string[];
-    pageIndex: number;
-    nextPageIndex: number;
-    count: number;
-    totalCount: number;
 }

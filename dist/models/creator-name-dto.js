@@ -15,11 +15,19 @@ class CreatorNameDto {
 }
 exports.CreatorNameDto = CreatorNameDto;
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'Id of the target creator.',
+        required: true,
+        type: 'string'
+    }),
     __metadata("design:type", String)
 ], CreatorNameDto.prototype, "creatorId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'The display name or moniker of the creator.',
+        required: true,
+        type: 'string'
+    }),
     __metadata("design:type", String)
 ], CreatorNameDto.prototype, "displayName", void 0);
 //# sourceMappingURL=creator-name-dto.js.map

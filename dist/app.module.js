@@ -11,14 +11,14 @@ const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const creator_evm_1 = require("./creator-evm");
-const asset_provenance_evm_controller_1 = require("./asset-provenance-evm/asset-provenance-evm.controller");
+const asset_provenance_evm_1 = require("./asset-provenance-evm");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [creator_evm_1.CreatorEvmModule],
-        controllers: [app_controller_1.AppController, asset_provenance_evm_controller_1.AssetProvenanceEvmController],
+        controllers: [app_controller_1.AppController, asset_provenance_evm_1.AssetProvenanceEvmController, asset_provenance_evm_1.AssetCreatorEvmController, asset_provenance_evm_1.AssetSeriesEvmController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

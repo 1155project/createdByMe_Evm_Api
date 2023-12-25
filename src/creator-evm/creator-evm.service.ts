@@ -1,22 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { EvmHelpers } from '../evm-helpers';
 
 @Injectable()
 export class CreatorEvmService {
 
-
-    getCreatorId (displayName: string) : string {
-        return "0x000000000000000000000000DEADBEEF";
+    async getCreatorId (displayName: string) : Promise<string> {
+        const inst = EvmHelpers.creatorNameserviceInstance;
+        return inst.getCreatorId(displayName);
     }
 
-    getCreatorName (creatorId : string) : string {
-        return "CLEM";
+    async getCreatorName (creatorId : string) : Promise<string> {
+        const inst = EvmHelpers.creatorNameserviceInstance;
+        return inst.getCreatorName(creatorId);
     }
 
-    isCreatorNameAvailable(displayName : string) : boolean {
-        return false;
+    async isCreatorNameAvailable(displayName : string) : Promise<boolean> {
+        const inst = EvmHelpers.creatorNameserviceInstance;
+        return inst.isCreatorNameAvailable(displayName);
     }
 
-    setCreatorName (creatorId : string, displayName: string) {
-        
+    async setCreatorName (creatorId : string, displayName: string) : Promise<void> {
+        const inst = EvmHelpers.creatorNameserviceInstance;
+        console.log(`creatorNameserviceInstance: ${inst}`);
+        console.log(`creatorId: ${creatorId}, displayName: ${displayName}`);
+        await inst.setCreatorName(creatorId, displayName);
     }
 }

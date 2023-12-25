@@ -15,7 +15,7 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('creatorId/:displayName')
-  getCreatorId (@Param('displayName') displayName: string) : string {
+  getCreatorId (@Param('displayName') displayName: string) : Promise<string> {
     console.log(`displayName: ${displayName}`);
     return this.creatorNameService.getCreatorId(displayName);
   }
@@ -27,7 +27,7 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('creatorName/:creatorId')
-  getCreatorName (@Param('creatorId') creatorId : string) : string {
+  async getCreatorName (@Param('creatorId') creatorId : string) : Promise<string> {
     return this.creatorNameService.getCreatorName(creatorId);
   }
 
@@ -38,7 +38,7 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('available/:displayName')
-  isCreatorNameAvailable(@Param('displayName') displayName : string) : boolean {
+  async isCreatorNameAvailable(@Param('displayName') displayName : string) : Promise<boolean >{
     return this.creatorNameService.isCreatorNameAvailable(displayName);
   }
 
@@ -61,13 +61,14 @@ export class CreatorEvmController {
     isArray: false
   })
   @Get('registeredCreators')
-  getRegisteredCreators (@Query('index') index: number, @Query('pageSize') pageSize: number) : ReqisteredCreatorResponse {
+  async getRegisteredCreators (@Query('index') index: number, @Query('pageSize') pageSize: number) : Promise<ReqisteredCreatorResponse> {
     return new ReqisteredCreatorResponse();
   }
 
-  @ApiBody({ type: [CreatorNameDto] })
+  @ApiBody({ type: CreatorNameDto })
   @Post('register')
-  setCreatorName (@Body() creatorNameDto: CreatorNameDto) {
-      this.creatorNameService.setCreatorName(creatorNameDto.creatorId, creatorNameDto.displayName);
+  async setCreatorName (@Body() creatorNameDto: CreatorNameDto): Promise<void> {
+      console.log(`request: ${JSON.stringify(creatorNameDto)}`);
+      await this.creatorNameService.setCreatorName(creatorNameDto.creatorId, creatorNameDto.displayName);
   }
 }

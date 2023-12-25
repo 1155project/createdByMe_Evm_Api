@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Post, Query } from '@nestjs/common';
+import { Controller, Get, Body, Post, Query, Param } from '@nestjs/common';
 import { CreatorEvmService } from './creator-evm.service';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreatorNameDto, ReqisteredCreatorResponse } from '../models';
@@ -15,7 +15,8 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('creatorId/:displayName')
-  getCreatorId (displayName: string) : string {
+  getCreatorId (@Param('displayName') displayName: string) : string {
+    console.log(`displayName: ${displayName}`);
     return this.creatorNameService.getCreatorId(displayName);
   }
 
@@ -26,7 +27,7 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('creatorName/:creatorId')
-  getCreatorName (creatorId : string) : string {
+  getCreatorName (@Param('creatorId') creatorId : string) : string {
     return this.creatorNameService.getCreatorName(creatorId);
   }
 
@@ -37,7 +38,7 @@ export class CreatorEvmController {
     type: String,
   })
   @Get('available/:displayName')
-  isCreatorNameAvailable(displayName : string) : boolean {
+  isCreatorNameAvailable(@Param('displayName') displayName : string) : boolean {
     return this.creatorNameService.isCreatorNameAvailable(displayName);
   }
 

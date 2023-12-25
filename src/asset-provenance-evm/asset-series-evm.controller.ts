@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Post, Query } from '@nestjs/common';
+import { Controller, Get, Body, Post, Query, Param } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { SeriesDto, SeriesResponse } from 'src/models';
 @ApiTags('assetSeriesEvmService')
@@ -11,7 +11,7 @@ export class AssetSeriesEvmController {
         type: String,
     })    
     @Get('seriesList/:creatorId')
-    getSeriesList(creatorId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): SeriesResponse {
+    getSeriesList(@Param('creatorId') creatorId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): SeriesResponse {
         return new SeriesResponse();
     }
     
@@ -28,7 +28,7 @@ export class AssetSeriesEvmController {
         type: String,
     })
     @Get('seriesMetadata/:creatorId/:seriesId')
-    getSeriesMetadata(creatorId: string, seriesId: string): string {
+    getSeriesMetadata(@Param('creatorId') creatorId: string, @Param('seriesId') seriesId: string): string {
         return '';
     }
 

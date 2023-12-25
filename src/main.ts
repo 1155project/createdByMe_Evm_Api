@@ -1,8 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { APP_CONFIG } from './app.config';
 
 async function bootstrap() {
+  console.log(`Running in ${APP_CONFIG.environment} mode.`);
+  console.log(`Target node: ${APP_CONFIG.envSpecific.nodeUrl}`);
+
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()

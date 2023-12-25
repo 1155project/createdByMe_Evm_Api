@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Post, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Body, Post, Query, Delete, Param } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AssetBySeriesResponse, AssetDescriptionDto, AssetMetadataDto, AssetMetadataUrlDto, AssetTagDto, RegisterAssetDto } from 'src/models';
 
@@ -18,7 +18,7 @@ export class AssetProvenanceEvmController {
         type: String,
       })
     @Get('assetBySeries/:creatorId/:seriesId')
-    getAssetsBySeries(creatorId: string, seriesId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): AssetBySeriesResponse {
+    getAssetsBySeries(@Param('creatorId') creatorId: string, @Param('seriesId') seriesId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): AssetBySeriesResponse {
         return new AssetBySeriesResponse();
     }
 
@@ -35,7 +35,7 @@ export class AssetProvenanceEvmController {
         type: String,
     })
     @Get('assetMetadata/:creatorId/:assetId')
-    getAssetMetadata (creatorId: string, assetId: string): AssetMetadataDto {
+    getAssetMetadata (@Param('creatorId') creatorId: string, @Param('assetId') assetId: string): AssetMetadataDto {
         return new AssetMetadataDto();
     }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Post, Query } from '@nestjs/common';
+import { Controller, Get, Body, Post, Query, Param } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreatorMetadataDto, CreatorStoryDto } from 'src/models';
 
@@ -12,7 +12,7 @@ export class AssetCreatorEvmController {
         type: String,
     })  
     @Get('creatorMetadata/:creatorId')
-    getCreatorMetadata (creatorId: string): CreatorMetadataDto {
+    getCreatorMetadata (@Param('creatorId') creatorId: string): CreatorMetadataDto {
         return new CreatorMetadataDto();
     }
 

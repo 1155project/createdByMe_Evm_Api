@@ -1,7 +1,7 @@
-export { CreatorNameDto } from './creator-name-dto';
-export { ReqisteredCreatorResponse } from './registered-creators-response';
+export { RegisterCreatorDto as CreatorNameDto } from './register-creator-dto';
+export { RegisteredProvenanceAddressessResponse } from './registered-provenance-addresses-response';
 export { CreatorMetadataDto } from './creator-metadata-dto';
-export { AssetBySeriesResponse } from './asset-by-series-response';
+export { AssetIdsResponse } from './asset-by-series-response';
 export { SeriesResponse } from './series-response';
 export { AssetMetadataDto } from './asset-metadata-dto';
 export { SeriesDto } from './series-dto';

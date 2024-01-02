@@ -1,12 +1,14 @@
 import { Controller, Get, Body, Post, Query, Param } from '@nestjs/common';
 import { CreatorEvmService } from './creator-evm.service';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { CreatorNameDto, ReqisteredCreatorResponse } from '../models';
+import { RegisteredProvenanceAddressessResponse } from '../models';
+import { AssetCreatorFactoryService } from '../asset-provenance-evm';
+import { RegisterCreatorDto } from '../models/register-creator-dto';
 
 @ApiTags('creatorEvmService')
 @Controller('creatorEvm')
 export class CreatorEvmController {
-  constructor(private readonly creatorNameService: CreatorEvmService) {}
+  constructor(private readonly creatorNameService: CreatorEvmService, private readonly assetCreatorService: AssetCreatorFactoryService) {}
 
   @ApiParam({
     name: 'displayName',
@@ -42,33 +44,34 @@ export class CreatorEvmController {
     return this.creatorNameService.isCreatorNameAvailable(displayName);
   }
 
-  @ApiParam({
-    name: 'index',
-    description: "The first index to return for this page of data.",
-    required: true,
-    type: Number
-  })  
-  @ApiParam({
-    name: 'pageSize',
-    description: "The number of row to retireve at a time.",
-    required: true,
-    type: Number,
-    example: 100
-  })
+  // @ApiParam({
+  //   name: 'index',
+  //   description: "The first index to return for this page of data.",
+  //   required: true,
+  //   type: Number
+  // })  
+  // @ApiParam({
+  //   name: 'pageSize',
+  //   description: "The number of row to retireve at a time.",
+  //   required: true,
+  //   type: Number,
+  //   example: 100
+  // })
   @ApiOkResponse({
     description: 'Paginated registered creator addresses response.',
-    type: ReqisteredCreatorResponse,
+    type: RegisteredProvenanceAddressessResponse,
     isArray: false
   })
   @Get('registeredCreators')
-  async getRegisteredCreators (@Query('index') index: number, @Query('pageSize') pageSize: number) : Promise<ReqisteredCreatorResponse> {
-    return new ReqisteredCreatorResponse();
+  async getRegisteredAssetProvenanceContracts (@Query('index') index: number, @Query('pageSize') pageSize: number) : Promise<RegisteredProvenanceAddressessResponse> {
+    return this.assetCreatorService.getRegisteredAssetProvenanceContracts(index, pageSize);
   }
 
-  @ApiBody({ type: CreatorNameDto })
+  @ApiBody({ type: RegisterCreatorDto })
   @Post('register')
-  async setCreatorName (@Body() creatorNameDto: CreatorNameDto): Promise<void> {
-      console.log(`request: ${JSON.stringify(creatorNameDto)}`);
-      await this.creatorNameService.setCreatorName(creatorNameDto.creatorId, creatorNameDto.displayName);
+  async registerCreator (@Body() request: RegisterCreatorDto): Promise<void> {
+      await this.creatorNameService.setCreatorName(request.creatorId, request.displayName);
+
+      return this.assetCreatorService.registerCreator(request.creatorId, request.story, request.defaultUrl);
   }
 }

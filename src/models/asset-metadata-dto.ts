@@ -33,12 +33,14 @@ export class AssetMetadataDto {
 
     @ApiProperty({
         description: 'URL of the NFT metadata associated with the asset.',
+        required: false,
         type: 'string'
     })
     url: string;
 
     @ApiProperty({
         description: 'Hash of the NFT\'s metadata document.',
+        required: false,
         type: 'string'
     })
     documentHash: string;

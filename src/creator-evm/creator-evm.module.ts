@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CreatorEvmController } from './creator-evm.controller';
 import { CreatorEvmService } from './creator-evm.service';
+import { AssetCreatorFactoryService, AssetEvmModule } from '../asset-provenance-evm';
 
 @Module({
-  imports: [],
+  imports: [AssetEvmModule],
   controllers: [CreatorEvmController],
-  providers: [CreatorEvmService],
+  providers: [CreatorEvmService, AssetCreatorFactoryService],
 })
 export class CreatorEvmModule {}

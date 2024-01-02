@@ -1,10 +1,14 @@
 import { Controller, Get, Body, Post, Query, Delete, Param } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { AssetBySeriesResponse, AssetDescriptionDto, AssetMetadataDto, AssetMetadataUrlDto, AssetTagDto, RegisterAssetDto } from 'src/models';
+import { AssetIdsResponse, AssetDescriptionDto, AssetMetadataDto, AssetMetadataUrlDto, AssetTagDto, RegisterAssetDto } from 'src/models';
+import { AssetCreatorFactoryService } from './asset-creator-factory.service';
+import { AssetProverenanceEvmService } from './asset-provenance-evm.service';
 
 @ApiTags('assetProvenanceEvmService')
 @Controller('asset-provenance-evm')
 export class AssetProvenanceEvmController {
+    constructor(private readonly assetCreatorService: AssetCreatorFactoryService, private readonly assetProvenanceService: AssetProverenanceEvmService) {}
+
     @ApiParam({
         name: 'creatorId',
         description: "The id of the creator the series belongs to.",
@@ -17,9 +21,9 @@ export class AssetProvenanceEvmController {
         required: true,
         type: String,
       })
-    @Get('assetBySeries/:creatorId/:seriesId')
-    getAssetsBySeries(@Param('creatorId') creatorId: string, @Param('seriesId') seriesId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): AssetBySeriesResponse {
-        return new AssetBySeriesResponse();
+    @Get('assetIdsBySeries/:creatorId/:seriesId')
+    async getAssetIdsBySeries(@Param('creatorId') creatorId: string, @Param('seriesId') seriesId: string, @Query('idx') idx: number, @Query('pageSize') pageSize: number): Promise<AssetIdsResponse> {
+        return this.assetProvenanceService.getAssetIdsBySeries(creatorId, seriesId, idx, pageSize);
     }
 
     @ApiParam({
@@ -35,37 +39,39 @@ export class AssetProvenanceEvmController {
         type: String,
     })
     @Get('assetMetadata/:creatorId/:assetId')
-    getAssetMetadata (@Param('creatorId') creatorId: string, @Param('assetId') assetId: string): AssetMetadataDto {
-        return new AssetMetadataDto();
+    async getAssetMetadata (@Param('creatorId') creatorId: string, @Param('assetId') assetId: string): Promise<AssetMetadataDto> {
+        return this.assetProvenanceService.getAssetMetadata(creatorId, assetId);
     }
 
-    @ApiBody({ type: [RegisterAssetDto] })
+    @ApiBody({ type: AssetMetadataDto })
     @Post('register')
-    registerAsset(@Body() request: RegisterAssetDto) {
-
+    async registerAsset(@Body() request: AssetMetadataDto): Promise<void> {
+        return this.assetProvenanceService.registerAsset(request);
+        // RegisterAssetDto
     }
 
-    @ApiBody({ type: [AssetMetadataUrlDto] })
+    @ApiBody({ type: AssetMetadataUrlDto })
     @Post('setAssetUri')
-    setAssetUri (@Body() request: AssetMetadataUrlDto) {
-
+    async setAssetUri (@Body() request: AssetMetadataUrlDto): Promise<void> {
+        return this.assetProvenanceService.setAssetUri(request.creatorId, request.assetId, request.uri, request.hash);
     }
 
-    @ApiBody({ type: [AssetDescriptionDto] })
+    @ApiBody({ type: AssetDescriptionDto })
     @Post('setDescription')
-    updateAssetDescription(@Body() request: AssetDescriptionDto) {
-
+    async updateAssetDescription(@Body() request: AssetDescriptionDto): Promise<void> {
+        return this.assetProvenanceService.updateAssetDescription(request.creatorId, request.assetId, request.description);
     }
 
-    @ApiBody({ type: [AssetTagDto] })
+    @ApiBody({ type: AssetTagDto })
     @Post('addTag')
-    addTagToAsset(@Body() request: AssetTagDto) {
-
+    async addTagToAsset(@Body() request: AssetTagDto): Promise<void> {
+        return this.assetProvenanceService.addTagToAsset(request.creatorId, request.assetId, request.tag);
     }
 
-    @ApiBody({ type: [AssetTagDto] })
+    @ApiBody({ type: AssetTagDto })
     @Delete('removeTag')
-    removeTagFromAsset(@Body() request: AssetTagDto) {
-
+    async removeTagFromAsset(@Body() request: AssetTagDto): Promise<void> {
+        return this.assetProvenanceService.removeTagFromAsset(request.creatorId, request.assetId, request.tag);
     }
+
 }

@@ -1,4 +1,4 @@
-import { APP_CONFIG } from "src/app.config";
+import { APP_CONFIG } from "../app.config";
 
 export class AssetCreatorFactoryAbi {
     address = APP_CONFIG.environment === 'LOCAL'

@@ -21,8 +21,7 @@ export class CreatorEvmService {
 
     async setCreatorName (creatorId : string, displayName: string) : Promise<void> {
         const inst = EvmHelpers.creatorNameserviceInstance;
-        console.log(`creatorNameserviceInstance: ${inst}`);
-        console.log(`creatorId: ${creatorId}, displayName: ${displayName}`);
         await inst.setCreatorName(creatorId, displayName);
     }
+    // deployCreatorContract
 }

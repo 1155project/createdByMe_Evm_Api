@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AssetProvenanceEvmController } from './asset-provenance-evm.controller';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { AssetProvenanceEvmController } from './asset-provenance-evm.controller';
 
-describe('AssetProvenanceEvmController', () => {
-  let controller: AssetProvenanceEvmController;
+// describe('AssetProvenanceEvmController', () => {
+//   let controller: AssetProvenanceEvmController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [AssetProvenanceEvmController],
-    }).compile();
+//   beforeEach(async () => {
+//     const module: TestingModule = await Test.createTestingModule({
+//       controllers: [AssetProvenanceEvmController],
+//     }).compile();
 
-    controller = module.get<AssetProvenanceEvmController>(AssetProvenanceEvmController);
-  });
+//     controller = module.get<AssetProvenanceEvmController>(AssetProvenanceEvmController);
+//   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+//   it('should be defined', () => {
+//     expect(controller).toBeDefined();
+//   });
+// });

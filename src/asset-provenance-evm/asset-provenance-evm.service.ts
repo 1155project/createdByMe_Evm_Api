@@ -1,180 +1,173 @@
 import { Injectable } from '@nestjs/common';
 import { EvmHelpers } from '../evm-helpers';
+import { AssetCreatorFactoryService } from './asset-creator-factory.service';
+import { CreatorEvmService } from '../creator-evm';
+import { Contract, ethers } from 'ethers';
+import { AssetIdsResponse, AssetMetadataDto, CreatorMetadataDto, SeriesDto, SeriesResponse } from '../models';
+//import { toUtf8Bytes, formatBytes32String, parseBytes32String } from "@ethersproject/strings";
 
 @Injectable()
 export class AssetProverenanceEvmService {
+    //constructor(private readonly creatorNameService: CreatorEvmService, private readonly assetCreatorService: AssetCreatorFactoryService) {}
+    
+    async createSeries(creatorId: string, seriesId: string, description: string) : Promise<any>{
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const convertedSeriesId = ethers.encodeBytes32String(seriesId);
 
-/// @notice Provide a way for a creator to define a series of assets.
-    /// @dev _seriesId must be unique to this creator and not exist.
-    /// @param _seriesId - unique name of a group of assets.
-    // async createSeries(creatorId: string, seriesId: string, description: string) : Promise<void>{
-    //     const contract = EvmHelpers.assetCreatorInstance;
-    //     contract.createSeries
-    // }
+        console.log(`creatSeries req: ${creatorId}, ${convertedSeriesId}, ${description}`);
+        const resp = provenanceInst.createSeries(convertedSeriesId, description);
+        console.log(`creatSeries resp: ${JSON.stringify(resp)}`);
+        return resp;
+    }
 
-    // /// @notice Provides a way to retrieve all asset Ids associated with a series, paginated.
-    // /// @param _seriesId The series desired to show assets from.
-    // /// @param _idx Start index for the requested page.
-    // /// @param _pageSize Number of records to return at one time.
-    // function getAssetsBySeries(bytes32 _seriesId, uint256 _idx, uint8 _pageSize) public override view 
-    //     returns(uint256 [] memory assetIds, uint8 count, uint256 totalCount) {
-    //     require (_pageSize <= Constants.MAX_PAGE_SIZE, Constants.T_INV_PAGE_SIZE);
-    //     uint256[] memory result = new uint256 [] (_pageSize);
-    //     count = 0;
-    //     totalCount = _seriesAssets[_seriesId].length;
+    async getAssetIdsBySeries(creatorId: string, seriesId: string, idx: number, pageSize: number): Promise<AssetIdsResponse> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const convertedSeriesID = ethers.encodeBytes32String(seriesId);
 
-    //     for(uint i = 0; i < _pageSize; i++) {
-    //         if (_idx + i >= _seriesAssets[_seriesId].length) break;
+        const resp = await provenanceInst.getAssetsBySeries(convertedSeriesID, idx, pageSize);
 
-    //         result[count] = _seriesAssets[_seriesId][_idx + i];
-    //         count += 1;
-    //     }
-
-    //     return (result, count, totalCount);
-    // }
-
-    // /// @notice Provides a way to retieve the token's internal data.
-    // /// @param _assetId - main id of the target asset.
-    // function getAssetMetadata (uint256 _assetId) public override view
-    //     returns(uint256 id, bytes32[] memory tags, string memory description, address creator, bytes32 seriesId, string memory url, uint256 documentHash) {
-    //         AssetProvenanceStructures.Asset memory assetData = _assetMetaData[_assetId];
-    //         id = _assetId;
-    //         description = assetData.description;
-    //         seriesId = assetData.seriesId;
-    //         tags = _assetTags[_assetId];
-    //         creator = _creator.id;
-    //         url = uri(_assetId);
-    //         documentHash = assetData.documentHash;
-    // }
-
-    // /// @notice Returns information about this creator.
-    // function getCreatorMetadata () public override view 
-    //     returns(address creator, string memory displayName, string memory story, uint256 assetCount) {
-    //         string memory name = getCreatorName(_creator.id);
-    //         creator = _creator.id;
-    //         displayName = name;
-    //         story = _creator.story;
-    //         assetCount = _assetCount;
-    // }
-
-    // /// @notice Enables a caller to retrieve the list of series created by the creator.
-    // /// @param _idx Start index for the requested page.
-    // /// @param _pageSize Number of records to return at one time.
-    // function getSeriesList(uint256 _idx, uint8 _pageSize) public override view 
-    //     returns(bytes32 [] memory seriesIds, uint8 count, uint256 totalCount) {
-    //     require (_pageSize <= Constants.MAX_PAGE_SIZE, Constants.T_INV_PAGE_SIZE);
-    //     bytes32[] memory result = new bytes32 [] (_pageSize);
-    //     count = 0;
-    //     totalCount = _seriesIdList.length;
+        const result = new AssetIdsResponse();      
+        result.assetIds = EvmHelpers.numbersToHex(resp.assetIds, true);
+        result.count = parseInt(resp.count.toString());
+        result.totalCount = parseInt(resp.totalCount.toString());
+        result.nextPageIndex = 1;
+        result.pageIndex = 1;
         
-    //     for(uint i = 0; i < _pageSize; i++) {
-    //         if (_idx + i >= _seriesIdList.length) break;
+        return result;
+    }
 
-    //         result[count] = _seriesIdList[_idx + i];
-    //         count += 1;
-    //     }
+    async getAssetMetadata (creatorId: string, assetId: string) : Promise<AssetMetadataDto> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const resp = await provenanceInst.getAssetMetadata(assetId);
+        const result = new AssetMetadataDto();
 
-    //     return (result, count, totalCount);
-    // }
+        result.assetId = EvmHelpers.dec2hex(resp.id.toString());
+        result.creatorId = resp.creator;
+        result.description = resp.description;
+        result.documentHash = resp.documentHash.toString();
+        result.seriesId = ethers.decodeBytes32String(resp.seriesId);
+        result.tags = this.decode32ByteStrings(resp.tags);
+        result.url = resp.url;
 
-    // // @notice Retrieves information about the series
-    // // @param _seriesId Series Id
-    // function getSeriesMetadata(bytes32 _seriesId) public override view returns(string memory description) {
-    //     description = _series[_seriesId].description;
-    // }
+        return result;
+    }
 
-    // /// @notice Registers a new asset NFT.
-    // /// @dev Asset cannot exist, 
-    // ///       msg.Sender must be asset owner or ApprovedForAll
-    // ///       _creator must exist, 
-    // ///       _creator must equal msg.sender, or msg.sender is admin.
-    // ///       _description must be less or equal to 1024 characters.
-    // /// @param _assetId id that corresponds to the RFID Tag associated to the physical asset.
-    // /// @param _seriesId Series asset belongs to, set to empty string to default to no series.
-    // /// @param _description Description of the asset
-    // /// @param _tags list of descriptive tags.
-    // function registerAsset(uint256 _assetId, bytes32 _seriesId, string memory _description, bytes32[] memory _tags) public override {
-    //     require(_assetMetaData[_assetId].id == 0, Constants.T_ASSET_REG);
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
-    //     require(Utils.stringLength(_description) < Constants.MAX_TEXT_LENGTH, Constants.T_DESC_TOO_LARGE);
+    /// @notice Returns information about this creator.
+    async getCreatorMetadata (creatorId: string) : Promise<CreatorMetadataDto> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const resp = await provenanceInst.getCreatorMetadata();
+        const result = new CreatorMetadataDto();
 
-    //     AssetProvenanceStructures.Asset memory asset = AssetProvenanceStructures.Asset({
-    //         id: _assetId,
-    //         owner: _creator.id,
-    //         seriesId: _seriesId,
-    //         description: _description,
-    //         documentHash: 0
-    //     });
+        result.assetCount = parseInt(resp.assetCount.toString());
+        result.creatorId = resp.creator;
+        result.creatorName = resp.displayName;
+        result.story = resp.story;
 
-    //     _assetMetaData[_assetId] = asset;
-    //     _seriesAssets[_seriesId].push(_assetId);
-    //     _assetTags[_assetId] = _tags;
+        return result;
+    }
 
-    //     emit AssetRegistered (_assetId, _description, _seriesId, _creator.id, msg.sender);
-    //     emit AssetTagsAdded (_assetId, _tags);
-    // }
+    async getSeriesList(creatorId: string, idx: number, pageSize: number): Promise<SeriesResponse> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const resp = await provenanceInst.getSeriesList(idx, pageSize);
+        const result = new SeriesResponse();
 
-    // /// @notice Sets a metadata file Uri for a specific asset.
-    // /// @dev Asset must exist
-    // /// @param _assetId id that corresponds to the RFID Tag associated to the physical asset.
-    // /// @param _uri uri to metadata files.
-    // /// @param _hash keccak-256 hash of the base Metadata document.
-    // function setAssetUri (uint256 _assetId, string memory _uri, uint256 _hash) public override {
-    //     require(_assetMetaData[_assetId].id > 0, Constants.T_ASSET_NOT_FOUND);
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
+        result.count = parseInt(resp.count.toString());
+        result.nextPageIndex = 1;
+        result.pageIndex = 1;
+        result.seriesIds = this.decode32ByteStrings(resp.seriesIds);
+        result.totalCount = parseInt(resp.totalCount.toString());
 
-    //     _setURI(_uri);
+        return result;
+    }
 
-    //     if(_hash > 0 && _hash != _assetMetaData[_assetId].documentHash) {
-    //         _assetMetaData[_assetId].documentHash = _hash;
-    //         emit HashUpdated (_assetId, _hash, msg.sender);
-    //     }
-    // }
+    async getSeriesMetadata(creatorId: string, seriesId: string): Promise<SeriesDto> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const converted = ethers.encodeBytes32String(seriesId);
+        const resp = await provenanceInst.getSeriesMetadata(converted);
 
-    // /// @notice Updates the long description of the series.
-    // function updateSeriesDescription(bytes32 _seriesId, string memory _description) public override {
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
-    //     require(Utils.stringLength(_description) < Constants.MAX_TEXT_LENGTH, Constants.T_DESC_TOO_LARGE);
+        const result = new SeriesDto();
+        result.creatorId = creatorId;
+        result.seriesId = seriesId;
+        result.description = resp;
 
-    //     _series[_seriesId].description = _description;
+        return result;
+    }
+// AssetMetadataDto
+    async registerAsset(request: AssetMetadataDto): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(request.creatorId);
+        const convertedSeriesId = ethers.encodeBytes32String(request.seriesId);
+        const convertedTags = this.encodeTo32ByteStrings(request.tags);
+        await provenanceInst.registerAsset(request.assetId, convertedSeriesId, request.description, convertedTags);
 
-    //     emit SeriesDescriptionUpdated(_seriesId, _description);
-    // }
+        if(request.url.length > 0) {
+            let hash = '0x0';
+            if (request.documentHash.length > 0) hash = request.documentHash;
+            await provenanceInst.setAssetUri (request.assetId, request.url, hash);
+        }
+    }
 
-    // function updateAssetDescription(uint256 _assetId, string memory _description) public override {
-    //     require(_assetMetaData[_assetId].id > 0, Constants.T_ASSET_NOT_FOUND);
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
-    //     require(Utils.stringLength(_description) < Constants.MAX_TEXT_LENGTH, Constants.T_DESC_TOO_LARGE);
-
-    //     _assetMetaData[_assetId].description = _description;
-
-    //     emit AssetDescriptionUpdated(_assetId, _description);
-    // }
-
-    // function updateCreatorStory(string memory _story) public override {
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
-    //     require(Utils.stringLength(_story) < Constants.MAX_TEXT_LENGTH, Constants.T_DESC_TOO_LARGE);
-    //     _creator.story = _story;
-
-    //     emit CreatorStoryUpdated(_creator.id, _story);
-    // }
-
-    // function addTagToAsset(uint256 _assetId, bytes32 _tag) public override {
-    //     require(_assetMetaData[_assetId].id > 0, Constants.T_ASSET_NOT_FOUND);
-    //     require(hasRole(Constants.AUTH_ROLE, msg.sender) || msg.sender == _creator.id, Constants.T_NOT_AUTHORIZED);
-    //     require(_assetTags[_assetId].length +1 < MAX_ASSET_TAGS, Constants.T_MAX_TAGS);
-    //     console.log('addTagToAsset');
-    //     uint idx = tagIndex(_assetId, _tag);
-    //     require(idx > MAX_ASSET_TAGS, Constants.T_HAS_TAG);
-         
-    //     _assetTags[_assetId].push(_tag);
-    //     bytes32[] memory tags = new bytes32[](1);
-    //     tags[0] = _tag;
-    //     emit AssetTagsAdded (_assetId, tags);
-    // }
-
-    // removeTagFromAsset(uint256 _assetId, bytes32 _tag) public override {
+    async setAssetUri (creatorId: string, assetId: string, url: string, documentHash): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        let hash = '0x0';
         
-    // }
+        if (documentHash.length > 0) hash = documentHash;
 
+        await provenanceInst.setAssetUri (assetId, url, hash);
+    }
+
+    async updateSeriesDescription(creatorId: string, seriesId: string, description: string): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const convertedSeriesId = ethers.encodeBytes32String(seriesId);
+
+        return provenanceInst.updateSeriesDescription(convertedSeriesId, description);
+    }
+
+    async updateAssetDescription(creatorId: string, assetId: string, description: string): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        return provenanceInst.updateAssetDescription(assetId, description);
+    }
+
+    async updateCreatorStory(creatorId: string, story): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        return provenanceInst.updateCreatorStory(story);
+    }
+
+    async addTagToAsset(creatorId: string, assetId: string, tag: string): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const convertedTag = ethers.encodeBytes32String(tag);
+
+        return provenanceInst.addTagToAsset(assetId, convertedTag);
+    }
+
+    async removeTagFromAsset(creatorId: string, assetId: string, tag: string): Promise<void> {
+        const provenanceInst = await this.getAssetProvenanceContractInstance(creatorId);
+        const convertedTag = ethers.encodeBytes32String(tag);
+
+        return provenanceInst.removeTagFromAsset(assetId, convertedTag);
+    }
+
+    private async getAssetProvenanceContractInstance(creatorId: string): Promise<Contract> {
+        const creatoNameServiceInst = EvmHelpers.creatorNameserviceInstance;
+        const targetAddress = await creatoNameServiceInst.getCreatorAssetProvenanceAddress(creatorId);
+        return EvmHelpers.getAssetProvenanceInstance(targetAddress);
+    }
+
+    private decode32ByteStrings(targets: string[]) : string[] {
+        const converted = targets.map(t => {
+            const s = ethers.decodeBytes32String(t);
+            if (s != '') {
+                return s;
+            }
+        });
+        
+        return converted.filter(c => {
+            if (c !== null) return c;
+        });
+    }
+
+    private encodeTo32ByteStrings(targets: string[]) : string[] {
+        return targets.map(t => {
+            return ethers.encodeBytes32String(t);
+        });
+    }
 }

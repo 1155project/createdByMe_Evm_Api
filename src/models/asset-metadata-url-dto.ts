@@ -20,7 +20,7 @@ export class AssetMetadataUrlDto {
         required: true,
         type: 'string'
     })
-    turi: string;
+    uri: string;
 
     @ApiProperty({
         description: 'The hashed value of the asset\'s metadata file. Used as a validity check.',
